@@ -12,4 +12,3 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=127)
     last_name = models.CharField(max_length=127)
     is_employee = models.BooleanField(default=False)
-    is_client = models.BooleanField(default=True)
