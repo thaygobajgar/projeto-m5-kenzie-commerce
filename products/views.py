@@ -1,3 +1,4 @@
+from django_filters import rest_framework as filters
 from rest_framework.generics import ListCreateAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser
@@ -5,9 +6,26 @@ from .models import Product
 from .serializers import ProductSerializer
 
 
+class ProductFilter(filters.FilterSet):
+    name = filters.CharFilter(
+        field_name="name",
+        lookup_expr="icontains",
+    )
+    category = filters.CharFilter(
+        field_name="category__name",
+        lookup_expr="icontains",
+    )
+
+    class Meta:
+        model = Product
+        fields = ["id"]
+
+
 class ProductView(ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProductFilter
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminUser]
 
