@@ -38,7 +38,15 @@ AUTH_USER_MODEL = "users.User"
 THIRD_PARTY_APPS = [
     "rest_framework",
 ]
-MY_APPS = ["users", "addresses", "categories", "products", "shopping_carts", "orders"]
+MY_APPS = [
+    "users",
+    "addresses",
+    "categories",
+    "products",
+    "shopping_carts",
+    "orders",
+    "reviews",
+]
 
 DJANGO_APPS = [
     "django.contrib.admin",

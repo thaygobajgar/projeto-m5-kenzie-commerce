@@ -1,11 +1,31 @@
 from rest_framework import serializers
 from categories.models import Category
 from categories.serializers import CategorySerializer
+from reviews.models import Review
 from .models import Product
+
+
+class ReviewProductSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        slug_field="username",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Review
+        fields = [
+            "stars",
+            "review",
+            "user",
+        ]
 
 
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
+    reviews = ReviewProductSerializer(
+        read_only=True,
+        many=True,
+    )
 
     def create(self, validated_data: dict):
         category_data = validated_data.pop("category")
@@ -49,4 +69,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "description",
             "category",
+            "reviews",
         ]
