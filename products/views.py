@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAdminUser
 from .models import Product
@@ -31,3 +31,10 @@ class ProductView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
+
+
+class ProductDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminUser]
