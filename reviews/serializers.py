@@ -1,10 +1,15 @@
 from rest_framework import serializers
-from products.serializers import ProductSerializer
+from products.models import Product
 from .models import Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(
+    user = serializers.SlugRelatedField(
+        slug_field="username",
+        read_only=True,
+    )
+    product = serializers.SlugRelatedField(
+        slug_field="name",
         read_only=True,
     )
 
@@ -14,5 +19,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             "id",
             "stars",
             "review",
+            "user",
             "product",
         ]
