@@ -3,16 +3,27 @@ from .models import ShoppingCart, OrderedCarts
 from products.serializers import ProductSerializer
 
 
-class ShoppingCartSerializer(serializers.Serializer):
+class CartProductOrderSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = OrderedCarts
+        fields = ["id", "product", "shopping_cart"]
+        read_only_fields = ["shopping_cart"]
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    orders = CartProductOrderSerializer(read_only=True, many=True)
+
     class Meta:
         model = ShoppingCart
         fields = [
             "id",
             "user",
-            "orders",
             "is_paid",
-            "cart_products_order",
+            "orders",
         ]
+        read_only_fields = ["user"]
 
     def create(self, validated_data):
         shopping_cart_obj = ShoppingCart.objects.create(**validated_data)
@@ -20,7 +31,7 @@ class ShoppingCartSerializer(serializers.Serializer):
         return shopping_cart_obj
 
 
-class ShoppingCartAddSerializer(serializers.Serializer):
+class ShoppingCartAddSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
     shopping_cart = ShoppingCartSerializer(read_only=True)
 
@@ -30,7 +41,5 @@ class ShoppingCartAddSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         ordered_cart_obj = OrderedCarts.objects.create(**validated_data)
-        import ipdb
 
-        ipdb.set_trace()
         return ordered_cart_obj
