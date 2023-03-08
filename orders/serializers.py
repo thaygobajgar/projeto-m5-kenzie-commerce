@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.core.mail import send_mail
 
-from .models import Order, Status
-from products.models import Product
+from .models import Order
+from products.serializers import ProductSerializer
 from users.serializers import UserSerializer
 
 
