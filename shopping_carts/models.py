@@ -12,6 +12,7 @@ class ShoppingCart(models.Model):
         through="shopping_carts.OrderedCarts",
         related_name="ordered_products",
     )
+    is_paid = models.BooleanField(default=False)
 
 
 class OrderedCarts(models.Model):

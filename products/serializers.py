@@ -70,4 +70,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "description",
             "category",
             "reviews",
+            "user",
         ]
