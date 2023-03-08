@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import dotenv
 import os
 
@@ -38,7 +39,15 @@ AUTH_USER_MODEL = "users.User"
 THIRD_PARTY_APPS = [
     "rest_framework",
 ]
-MY_APPS = ["users", "addresses", "categories", "products", "shopping_carts", "orders"]
+MY_APPS = [
+    "users",
+    "addresses",
+    "categories",
+    "products",
+    "shopping_carts",
+    "orders",
+    "reviews",
+]
 
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -93,7 +102,11 @@ DATABASES = {
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "HOST": os.getenv("POSTGRES_DB_HOST"),
         "PORT": os.getenv("POSTGRES_PORT"),
-    }
+    },
+    "db_random": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    },
 }
 
 
@@ -118,6 +131,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
 
 LANGUAGE_CODE = "en-us"
 
