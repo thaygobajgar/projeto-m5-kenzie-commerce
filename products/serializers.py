@@ -75,4 +75,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "stars",
             "reviews_count",
             "category",
+            "product_image",
         ]
