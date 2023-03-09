@@ -47,6 +47,7 @@ MY_APPS = [
     "shopping_carts",
     "orders",
     "reviews",
+    "lists",
 ]
 
 DJANGO_APPS = [
