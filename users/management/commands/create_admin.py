@@ -41,6 +41,7 @@ class Command(BaseCommand):
             username=username,
             password=password,
             email=email,
+            user_type="Administrador",
         )
 
         self.stdout.write(
