@@ -15,8 +15,31 @@ class Order(models.Model):
         editable=False,
     )
     status = models.CharField(
-        max_length=16, choices=Status.choices, default=Status.ORDERED
+        max_length=16,
+        choices=Status.choices,
+        default=Status.ORDERED,
     )
     user = models.ForeignKey(
-        "users.User", on_delete=models.CASCADE, related_name="orders"
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="orders",
     )
+    products = models.ManyToManyField(
+        "products.Product",
+        through="orders.OrderedProducts",
+        related_name="orders",
+    )
+
+
+class OrderedProducts(models.Model):
+    product = models.ForeignKey(
+        "products.Product",
+        on_delete=models.CASCADE,
+        related_name="ordered_product",
+    )
+    order = models.ForeignKey(
+        "orders.Order",
+        on_delete=models.CASCADE,
+        related_name="order_products",
+    )
+    quant = models.IntegerField(default=1)

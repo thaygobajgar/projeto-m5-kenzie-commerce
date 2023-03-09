@@ -5,22 +5,26 @@ from django.db import models
 
 class ShoppingCart(models.Model):
     user = models.OneToOneField(
-        "users.User", on_delete=models.DO_NOTHING, related_name="shopping_carts"
+        "users.User",
+        on_delete=models.CASCADE,
+        related_name="shopping_carts",
     )
-    orders = models.ManyToManyField(
+    products = models.ManyToManyField(
         "products.Product",
-        through="shopping_carts.OrderedCarts",
-        related_name="ordered_products",
+        through="shopping_carts.ProductCarts",
+        related_name="shopping_carts",
     )
-    is_paid = models.BooleanField(default=False)
 
 
-class OrderedCarts(models.Model):
+class ProductCarts(models.Model):
     product = models.ForeignKey(
-        "products.Product", on_delete=models.DO_NOTHING, related_name="ordered_product"
+        "products.Product",
+        on_delete=models.CASCADE,
+        related_name="product_cart",
     )
     shopping_cart = models.ForeignKey(
         "shopping_carts.ShoppingCart",
-        on_delete=models.DO_NOTHING,
-        related_name="cart_products_order",
+        on_delete=models.CASCADE,
+        related_name="cart_products",
     )
+    quant = models.IntegerField(default=1)

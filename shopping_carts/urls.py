@@ -4,7 +4,7 @@ from .views import ShoppingCartView, ShoppingCartAddView, ShoppingCartCheckoutVi
 urlpatterns = [
     path("shopping-cart/", ShoppingCartView.as_view()),
     path(
-        "shopping-cart/<int:shopping_cart_id>/add/<int:product_id>/",
+        "shopping-cart/<int:product_id>/",
         ShoppingCartAddView.as_view(),
     ),
     path("shopping-cart/checkout/", ShoppingCartCheckoutView.as_view()),
