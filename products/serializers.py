@@ -1,33 +1,36 @@
+from statistics import mean
 from rest_framework import serializers
 from categories.models import Category
 from categories.serializers import CategorySerializer
-from reviews.models import Review
 from .models import Product
 
 
-class ReviewProductSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        slug_field="username",
-        read_only=True,
-    )
-
-    class Meta:
-        model = Review
-        fields = [
-            "stars",
-            "review",
-            "user",
-        ]
-
-
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    reviews = ReviewProductSerializer(
-        read_only=True,
-        many=True,
-    )
+    category = CategorySerializer(write_only=True)
+    category_name = serializers.SerializerMethodField()
+    stars = serializers.SerializerMethodField()
+    reviews_count = serializers.SerializerMethodField()
 
-    def create(self, validated_data: dict):
+    def get_category_name(self, obj: Product) -> str:
+        category_name = obj.category.name
+
+        return category_name
+
+    def get_stars(self, obj: Product) -> float | None:
+        reviews = obj.reviews.all()
+        stars = [review.stars for review in reviews]
+
+        if not stars:
+            return None
+
+        return round(mean(stars), 1)
+
+    def get_reviews_count(self, obj: Product) -> int:
+        reviews_count = obj.reviews.count()
+
+        return reviews_count
+
+    def create(self, validated_data: dict) -> Product:
         category_data = validated_data.pop("category")
         category = Category.objects.filter(
             name__iexact=category_data["name"],
@@ -48,7 +51,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return product
 
-    def update(self, instance: Product, validated_data: dict):
+    def update(self, instance: Product, validated_data: dict) -> Product:
         for key, value in validated_data.items():
             setattr(instance, key, value)
 
@@ -68,7 +71,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "is_avaiable",
             "price",
             "description",
+            "category_name",
+            "stars",
+            "reviews_count",
             "category",
-            "reviews",
-            "user",
         ]

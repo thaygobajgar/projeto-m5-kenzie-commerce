@@ -1,9 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from addresses.models import Address
 
 
-# Create your models here.
+class UserType(models.TextChoices):
+    ADMINISTRADOR = "Administrador"
+    VENDEDOR = "Vendedor"
+    CLIENTE = "Cliente"
+
+
 class User(AbstractUser):
+    user_type = models.CharField(
+        max_length=50,
+        choices=UserType.choices,
+        default=UserType.CLIENTE,
+    )
+    username = models.CharField(
+        max_length=127,
+        unique=True,
+        error_messages={"unique": "Username already exists"},
+    )
     email = models.EmailField(
         max_length=127,
         unique=True,
@@ -11,4 +27,4 @@ class User(AbstractUser):
     )
     first_name = models.CharField(max_length=127)
     last_name = models.CharField(max_length=127)
-    is_employee = models.BooleanField(default=False)
+    address = Address

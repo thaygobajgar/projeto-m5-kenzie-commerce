@@ -13,7 +13,7 @@ class CartProductOrderSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-    orders = CartProductOrderSerializer(read_only=True, many=True)
+    orders = ProductSerializer(read_only=True, many=True)
 
     class Meta:
         model = ShoppingCart
