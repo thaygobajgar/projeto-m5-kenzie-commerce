@@ -13,6 +13,7 @@ class Product(models.Model):
         max_length=255,
         null=True,
     )
+    product_image = models.ImageField(null=True)
 
     category = models.ForeignKey(
         "categories.Category",
