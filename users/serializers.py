@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.views import Response, status
 from addresses.serializers import AddressSerializer
 from addresses.models import Address
 from shopping_carts.models import ShoppingCart
@@ -28,7 +29,9 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user_obj
 
-    def update(self, instance: User, validated_data: dict) -> User:
+    def update(self, instance: User, validated_data: dict):
+        if validated_data['user_type'] == "Administrador":
+            raise PermissionError("You don't have permission to do this")
         if "password" in validated_data:
             instance.set_password(validated_data["password"])
         for key, value in validated_data.items():

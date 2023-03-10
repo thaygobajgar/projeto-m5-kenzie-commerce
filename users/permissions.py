@@ -8,7 +8,7 @@ class IsEmployeeOrReadOnly(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_authenticated
-            and request.user_type["Vendedor"]
+            and request.user_type == 'Vendedor'
         )
 
 
@@ -16,15 +16,15 @@ class IsAuthEmployee(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: View, obj: User) -> bool:
 
         if request.user.is_authenticated:
-            if request.user.user_type["Vendedor"] or obj == request.user:
+            if request.user.user_type == 'Vendedor' or obj == request.user:
                 return True
         return False
 
 
-# class IsAdminOrAccountOwner(permissions.BasePermission):
-#     def has_object_permission(self, request, view: View, obj: User) -> bool:
-#         return (
-#             request.user.is_authenticated
-#             and obj == request.user
-#             or request.user.is_staff
-#         )
+class IsAdminOrAccountOwner(permissions.BasePermission):
+    def has_object_permission(self, request, view: View, obj: User) -> bool:
+        return (
+            request.user.is_authenticated
+            and obj == request.user
+            or request.user.is_staff
+        )
