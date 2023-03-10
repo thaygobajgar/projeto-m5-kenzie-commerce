@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from shopping_carts.models import ShoppingCart
 from users.models import User
 
 
@@ -37,12 +38,14 @@ class Command(BaseCommand):
         if User.objects.filter(email=email).first():
             raise CommandError(f"Email `{email}` already taken.")
 
-        User.objects.create_superuser(
+        user_obj = User.objects.create_superuser(
             username=username,
             password=password,
             email=email,
             user_type="Administrador",
         )
+
+        ShoppingCart.objects.create(user=user_obj)
 
         self.stdout.write(
             self.style.SUCCESS(f"Admin `{username}` successfully created!"),

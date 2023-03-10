@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from addresses.serializers import AddressSerializer
 from addresses.models import Address
+from shopping_carts.models import ShoppingCart
 from .models import User, UserType
 
 
@@ -8,7 +9,7 @@ def choices_error_message(choices_class):
     valid_choices = [choice[0] for choice in choices_class.choices]
     message = ", ".join(valid_choices).rsplit(",", 1)
 
-    return "Choose between " + " and".join(message) + "."
+    return "Escolher entre " + "e".join(message) + "."
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,7 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
 
         user_obj = User.objects.create_user(**validated_data)
         Address.objects.create(**address_obj, user=user_obj)
-        print(user_obj)
+        ShoppingCart.objects.create(user=user_obj)
+
         return user_obj
 
     def update(self, instance: User, validated_data: dict) -> User:
