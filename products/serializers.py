@@ -57,6 +57,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
         if instance.stock:
             instance.is_avaiable = True
+        else:
+            instance.is_avaiable = False
 
         instance.save()
 

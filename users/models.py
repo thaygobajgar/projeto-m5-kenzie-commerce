@@ -4,9 +4,9 @@ from addresses.models import Address
 
 
 class UserType(models.TextChoices):
-    ADMINISTRADOR = 'Administrador'
-    VENDEDOR = 'Vendedor'
-    CLIENTE = 'Cliente'
+    ADMINISTRADOR = "Administrador"
+    VENDEDOR = "Vendedor"
+    CLIENTE = "Cliente"
 
 
 class User(AbstractUser):
@@ -14,7 +14,6 @@ class User(AbstractUser):
         max_length=50,
         choices=UserType.choices,
         default=UserType.CLIENTE,
-
     )
     username = models.CharField(
         max_length=127,

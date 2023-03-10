@@ -17,12 +17,12 @@ class Product(models.Model):
 
     category = models.ForeignKey(
         "categories.Category",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="products",
     )
 
     user = models.ForeignKey(
         "users.User",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="products",
     )
