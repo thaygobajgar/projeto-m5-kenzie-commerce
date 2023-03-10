@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class ShoppingCart(models.Model):
     user = models.OneToOneField(
@@ -27,4 +25,3 @@ class ProductCarts(models.Model):
         on_delete=models.CASCADE,
         related_name="cart_products",
     )
-    quant = models.IntegerField(default=1)

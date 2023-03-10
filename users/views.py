@@ -9,7 +9,7 @@ from rest_framework import generics
 class UserView(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsEmployeeOrReadOnly]
+    # permission_classes = [IsEmployeeOrReadOnly]
 
 
 class UserDetailView(generics.UpdateAPIView):

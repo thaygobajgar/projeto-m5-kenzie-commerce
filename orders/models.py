@@ -42,4 +42,3 @@ class OrderedProducts(models.Model):
         on_delete=models.CASCADE,
         related_name="order_products",
     )
-    quant = models.IntegerField(default=1)
