@@ -10,6 +10,10 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.SerializerMethodField()
     stars = serializers.SerializerMethodField()
     reviews_count = serializers.SerializerMethodField()
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field="username",
+    )
 
     def get_category_name(self, obj: Product) -> str:
         category_name = obj.category.name
@@ -78,4 +82,5 @@ class ProductSerializer(serializers.ModelSerializer):
             "reviews_count",
             "category",
             "product_image",
+            "user",
         ]
