@@ -14,9 +14,12 @@ class IsEmployeeOrReadOnly(permissions.BasePermission):
 
 class IsAuthEmployee(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: View, obj: User) -> bool:
-
         if request.user.is_authenticated:
-            if request.user.user_type["Vendedor"] or obj == request.user:
+            if (
+                request.user.user_type == "Vendedor"
+                or request.user.is_superuser
+                or obj == request.user
+            ):
                 return True
         return False
 

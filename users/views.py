@@ -12,7 +12,7 @@ class UserView(generics.ListCreateAPIView):
     # permission_classes = [IsEmployeeOrReadOnly]
 
 
-class UserDetailView(generics.UpdateAPIView):
+class UserDetailView(generics.RetrieveUpdateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAuthEmployee]
 
