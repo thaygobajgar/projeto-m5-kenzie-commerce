@@ -36,9 +36,8 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = "users.User"
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-]
+THIRD_PARTY_APPS = ["rest_framework"]
+
 MY_APPS = [
     "users",
     "addresses",
