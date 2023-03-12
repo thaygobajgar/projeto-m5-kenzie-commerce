@@ -17,10 +17,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict):
         address_obj = validated_data.pop("address")
-        if validated_data.get("user_type") == "Administrador":
-            user_obj = User.objects.create_superuser(**validated_data)
-            Address.objects.create(**address_obj, user=user_obj)
-            return user_obj
+
+        """
+        Adm está sendo criado via CLI do django, logo não tem necessidade dessa verificação
+        """
+
+        # if validated_data.get("user_type") == "Administrador":
+        #     user_obj = User.objects.create_superuser(**validated_data)
+        #     Address.objects.create(**address_obj, user=user_obj)
+        #     return user_obj
 
         user_obj = User.objects.create_user(**validated_data)
         Address.objects.create(**address_obj, user=user_obj)
@@ -31,7 +36,10 @@ class UserSerializer(serializers.ModelSerializer):
     def update(self, instance: User, validated_data: dict) -> User:
         for key, value in validated_data.items():
             setattr(instance, key, value)
-        instance.set_password(validated_data["password"])
+
+            if key == "password":
+                instance.set_password(value)
+
         instance.save()
 
         return instance
