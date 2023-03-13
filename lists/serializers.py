@@ -33,27 +33,10 @@ class ListSerializer(serializers.ModelSerializer):
         except AttributeError:
             return list_data
 
-    class Meta:
-        model = List
-        fields = [
-            "id",
-            "name",
-            "products",
-            "user",
-        ]
-
-
-class ListAddProductSerializer(serializers.ModelSerializer):
-    user = serializers.SlugRelatedField(
-        slug_field="username",
-        read_only=True,
-    )
-
     def update(self, instance: List, validated_data: list):
-        for product in validated_data["products"]:
-            instance.products.add(product)
+        product = self.context["request"].product
 
-        instance.save()
+        instance.products.add(product)
 
         return instance
 
@@ -62,8 +45,8 @@ class ListAddProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
-            "products",
             "user",
+            "products",
         ]
 
 
@@ -73,11 +56,15 @@ class ListRemoveProductSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
-    def update(self, instance: List, validated_data: list):
-        for product in validated_data["products"]:
-            instance.products.remove(product)
+    products = ProductSerializer(
+        read_only=True,
+        many=True,
+    )
 
-        instance.save()
+    def update(self, instance: List, validated_data: list):
+        product = self.context["request"].product
+
+        instance.products.remove(product)
 
         return instance
 

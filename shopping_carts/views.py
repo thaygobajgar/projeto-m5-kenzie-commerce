@@ -55,13 +55,9 @@ class ShoppingCartCheckoutView(UpdateAPIView):
             if not obj.is_avaiable:
                 raise NotFound(f"{obj.name} indisponivel")
 
-            quant = (
-                obj.product_cart.filter(
-                    shopping_cart__user=user,
-                )
-                .first()
-                .quant
-            )
+            quant = obj.product_cart.filter(
+                shopping_cart__user=user,
+            ).count()
 
             if obj.stock < quant:
                 raise NotFound(

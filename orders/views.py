@@ -13,10 +13,14 @@ class OrderView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        import ipdb
+
+        ipdb.set_trace()
         if self.request.user.is_superuser:
             return Order.objects.all()
 
-        return Order.objects.filter(user=self.request.user)
+        """esse filtro que mudei"""
+        return Order.objects.filter(purchase_sale_order=self.request.user)
 
 
 class OrderDetailView(generics.UpdateAPIView):

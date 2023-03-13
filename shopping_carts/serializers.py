@@ -1,38 +1,18 @@
 from rest_framework import serializers
 from .models import ShoppingCart, ProductCarts
 from products.models import Product
-from orders.models import Order
+from orders.models import Order, OrderedProducts, PurchaseSaleOrder
 
 
 class ShoppingCartProductSerializer(serializers.ModelSerializer):
-    quant = serializers.SerializerMethodField()
-
-    def get_quant(self, obj: Product):
-        try:
-            quant = (
-                obj.product_cart.filter(
-                    shopping_cart__user=self.context["request"].user,
-                )
-                .first()
-                .quant
-            )
-
-            return quant
-        except AttributeError:
-            return None
-
     class Meta:
         model = Product
         fields = [
             "id",
             "name",
             "price",
-            "quant",
         ]
-        read_only_fields = [
-            "name",
-            "price",
-        ]
+        read_only_fields = fields
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -47,33 +27,31 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     def update(self, instance: ShoppingCart, validated_data: dict):
         seller_set = {obj.user for obj in instance.products.all()}
-
+        """
+        tirar o vinculo de user no create
+        Criar 2 purchasesaleorder
+        vincular uma com o vendedor e uma com o comprador e ambas com a ordem criada
+        """
         for seller in seller_set:
-            orders = Order.objects.create(user=seller)
+            orders = Order.objects.create()
             for obj in instance.products.all():
                 if obj.user == seller:
-                    orders.products.add(obj)
-                    order_product = orders.order_products.filter(
-                        order=orders,
+                    order_obj = OrderedProducts.objects.create(
                         product=obj,
-                    ).first()
-                    order_product.quant = (
-                        obj.product_cart.filter(
-                            shopping_cart__user=self.context["request"].user,
-                        )
-                        .first()
-                        .quant
+                        order=orders,
                     )
+                    PurchaseSaleOrder.objects.create(user=seller, order=orders)
+                    PurchaseSaleOrder.objects.create(user=instance.user, order=orders)
+                    product = instance.products.filter(id=obj.id).first()
 
-                    order_product.save()
+                    product.stock -= 1
 
-                    order_product.product.stock -= order_product.quant
+                    if not product.stock:
+                        product.is_avaiable = False
 
-                    order_product.product.save()
+                    product.save()
 
-                    orders.save()
-
-        instance.products.set([])
+        instance.products.clear()
 
         instance.save()
 
@@ -101,20 +79,10 @@ class ShoppingCartAddSerializer(serializers.ModelSerializer):
     def update(self, instance: ShoppingCart, validated_data: dict):
         product_data = self.context["request"].product
 
-        product = instance.products.filter(id=product_data.id).first()
-
-        if product:
-            quant_data = ProductCarts.objects.filter(
-                shopping_cart=instance,
-                product=product,
-            ).first()
-            quant_data.quant += 1
-
-            quant_data.save()
-
-            return instance
-
-        instance.products.add(product_data)
+        ProductCarts.objects.create(
+            product=product_data,
+            shopping_cart=instance,
+        )
 
         return instance
 
