@@ -30,18 +30,18 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         """
         tirar o vinculo de user no create
         Criar 2 purchasesaleorder
-        vincular uma com o vendedor e uma com o comprador e ambas com a ordem criada
+        vincular uma com o vendedor e uma com o
+        comprador e ambas com a ordem criada
         """
         for seller in seller_set:
             orders = Order.objects.create()
             for obj in instance.products.all():
                 if obj.user == seller:
-                    order_obj = OrderedProducts.objects.create(
+                    OrderedProducts.objects.create(
                         product=obj,
                         order=orders,
                     )
-                    PurchaseSaleOrder.objects.create(user=seller, order=orders)
-                    PurchaseSaleOrder.objects.create(user=instance.user, order=orders)
+
                     product = instance.products.filter(id=obj.id).first()
 
                     product.stock -= 1
@@ -50,6 +50,16 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
                         product.is_avaiable = False
 
                     product.save()
+
+            PurchaseSaleOrder.objects.create(
+                user=seller,
+                order=orders,
+                is_sale_order=True,
+            )
+            PurchaseSaleOrder.objects.create(
+                user=instance.user,
+                order=orders,
+            )
 
         instance.products.clear()
 

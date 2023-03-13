@@ -19,11 +19,7 @@ class Order(models.Model):
         choices=Status.choices,
         default=Status.ORDERED,
     )
-    # user = models.ForeignKey(
-    #     "users.User",
-    #     on_delete=models.CASCADE,
-    #     related_name="orders",
-    # )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     purchase_sale_order = models.ManyToManyField(
         "users.User", through="orders.PurchaseSaleOrder", related_name="orders"
@@ -51,9 +47,13 @@ class OrderedProducts(models.Model):
 
 class PurchaseSaleOrder(models.Model):
     user = models.ForeignKey(
-        "users.User", on_delete=models.DO_NOTHING, related_name="purchase_sale_orders"
+        "users.User",
+        on_delete=models.DO_NOTHING,
+        related_name="purchase_sale_orders",
     )
-
+    is_sale_order = models.BooleanField(default=False)
     order = models.ForeignKey(
-        "orders.Order", on_delete=models.CASCADE, related_name="purchase_orders"
+        "orders.Order",
+        on_delete=models.CASCADE,
+        related_name="purchase_orders",
     )
