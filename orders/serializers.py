@@ -24,10 +24,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ["id", "products_id", "date", "status", "users_id"]
-
-    def create(self, validated_data):
-        return Order.objects.create(**validated_data)
+        fields = ["id", "product", "date", "status", "user"]
 
     def update(self, instance, validated_data):
         status = validated_data.get("status")

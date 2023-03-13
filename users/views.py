@@ -8,9 +8,6 @@ from rest_framework import generics
 
 
 class UserView(generics.ListCreateAPIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthAdminOrReadyOnly]
-
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
