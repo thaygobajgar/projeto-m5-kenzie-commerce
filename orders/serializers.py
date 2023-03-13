@@ -1,19 +1,29 @@
 from rest_framework import serializers
 from django.core.mail import send_mail
-
-from .models import Order
+from django.conf import settings
 from products.models import Product
-from users.serializers import UserSerializer
+from .models import Order, Status
+
+
+def choices_error_message(choices_class):
+    valid_choices = [choice[0] for choice in choices_class.choices]
+    message = ", ".join(valid_choices).rsplit(",", 1)
+
+    return "Escolher entre " + " e".join(message) + "."
 
 
 def dispatch_email(status, buyer, products):
     subject = f"O status do seu pedido foi atualizado para {status}"
-    message = f"Olá {buyer}, O status do seu pedido foi atualizado para {status}.\n\nDetalhes do pedido:\n"
-    for produto in products:
-        message += f"Nome do produto: {produto.nome}\nDescrição: {produto.descricao}\nPreço: {produto.preco}\n\n"
+    message = f"Olá {buyer.first_name}, O status do seu pedido foi atualizado para {status}.\n\nDetalhes do pedido:\n"
+    for product in products:
+        message += f"Nome do produto: {product.name}\nDescrição: {product.description}\nPreço: {product.price}\n\n"
     recipient_list = [buyer.email]
     send_mail(
-        subject, message, "rikellyh898@gmail.com", recipient_list, fail_silently=False
+        subject,
+        message,
+        settings.EMAIL_HOST_USER,
+        recipient_list,
+        fail_silently=False,
     )
 
 
@@ -41,16 +51,6 @@ class OrderProductSerializer(serializers.ModelSerializer):
             "product_image",
             "user",
         ]
-
-    def update(self, instance, validated_data):
-        status = validated_data.get("status")
-        user = instance.user
-        product = instance.product.all()
-        instance = super().update(instance, validated_data)
-
-        if status != instance.status:
-            dispatch_email(status, user, product)
-        return instance
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -84,6 +84,21 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return seller
 
+    def update(self, instance, validated_data):
+        status = validated_data.get("status")
+        user = instance.purchase_sale_order.filter(
+            purchase_sale_orders__is_sale_order=False,
+        ).first()
+        products = instance.products.all()
+
+        if status != instance.status:
+            dispatch_email(status, user, products)
+            instance.status = status
+
+        instance.save()
+
+        return instance
+
     class Meta:
         model = Order
         fields = [
@@ -94,13 +109,10 @@ class OrderSerializer(serializers.ModelSerializer):
             "seller",
             "products",
         ]
-
-    def update(self, instance, validated_data):
-        status = validated_data.get("status")
-        user = instance.user
-        product = instance.product.all()
-        instance = super().update(instance, validated_data)
-
-        if status != instance.status:
-            dispatch_email(status, user, product)
-        return instance
+        extra_kwargs = {
+            "status": {
+                "error_messages": {
+                    "invalid_choice": choices_error_message(Status),
+                }
+            },
+        }
