@@ -1,15 +1,15 @@
 from .models import User
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAuthEmployee, IsEmployeeOrReadOnly
+
+from .permissions import IsAuthEmployee, IsEmployeeOrReadOnly, IsAuthAdminOrReadyOnly
 from .serializers import UserSerializer
 from rest_framework import generics
 
 
-class UserView(generics.ListCreateAPIView):
+class UserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = [IsEmployeeOrReadOnly]
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
