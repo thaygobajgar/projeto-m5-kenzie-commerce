@@ -20,7 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return category_name
 
-    def get_stars(self, obj: Product) -> float | None:
+    def get_stars(self, obj: Product) -> float or None:
         reviews = obj.reviews.all()
         stars = [review.stars for review in reviews]
 
