@@ -57,3 +57,4 @@ class PurchaseSaleOrder(models.Model):
         on_delete=models.CASCADE,
         related_name="purchase_orders",
     )
+

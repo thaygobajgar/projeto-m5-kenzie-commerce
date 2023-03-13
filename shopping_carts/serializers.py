@@ -4,6 +4,7 @@ from products.models import Product
 from orders.models import Order, OrderedProducts, PurchaseSaleOrder
 
 
+
 class ShoppingCartProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
