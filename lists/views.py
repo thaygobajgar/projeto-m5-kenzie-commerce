@@ -45,7 +45,10 @@ class ListDetailView(RetrieveUpdateDestroyAPIView):
         product_id = self.kwargs.get("product_id")
 
         if product_id:
-            if Product.objects.filter(lists=self.kwargs["list_id"]).first():
+            if Product.objects.filter(
+                lists=self.kwargs["list_id"],
+                id=product_id,
+            ).first():
                 raise ParseError("Produto já adicionado")
 
             product = get_object_or_404(Product, id=product_id)
