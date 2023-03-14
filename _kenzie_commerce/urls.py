@@ -18,6 +18,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path, include
 
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("users.urls")),
@@ -26,6 +32,13 @@ urlpatterns = [
     path("api/", include("shopping_carts.urls")),
     path("api/", include("orders.urls")),
     path("api/", include("sales.urls")),
+    path("docs/", SpectacularAPIView.as_view(), name="docs"),
+    path(
+        "docs/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="docs"),
+        name="swagger-ui",
+    ),
+    path("docs/redoc/", SpectacularRedocView.as_view(url_name="docs"), name="redoc"),
 ]
 
 if settings.DEBUG:
