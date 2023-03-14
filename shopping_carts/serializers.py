@@ -4,7 +4,6 @@ from products.models import Product
 from orders.models import Order, OrderedProducts, PurchaseSaleOrder
 
 
-
 class ShoppingCartProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -28,14 +27,14 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
 
     def update(self, instance: ShoppingCart, validated_data: dict):
         seller_set = {obj.user for obj in instance.products.all()}
-        """
-        tirar o vinculo de user no create
-        Criar 2 purchasesaleorder
-        vincular uma com o vendedor e uma com o
-        comprador e ambas com a ordem criada
-        """
+
         for seller in seller_set:
-            orders = Order.objects.create()
+            try:
+                coupon = self.context["request"].coupon
+                orders = Order.objects.create(coupon=coupon)
+            except AttributeError:
+                orders = Order.objects.create()
+
             for obj in instance.products.all():
                 if obj.user == seller:
                     OrderedProducts.objects.create(

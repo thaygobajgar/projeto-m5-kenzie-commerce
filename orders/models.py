@@ -25,6 +25,13 @@ class Order(models.Model):
         "users.User", through="orders.PurchaseSaleOrder", related_name="orders"
     )
 
+    coupon = models.ForeignKey(
+        "sales.Coupon",
+        on_delete=models.CASCADE,
+        related_name="orders",
+        null=True,
+    )
+
     products = models.ManyToManyField(
         "products.Product",
         through="orders.OrderedProducts",
@@ -57,4 +64,3 @@ class PurchaseSaleOrder(models.Model):
         on_delete=models.CASCADE,
         related_name="purchase_orders",
     )
-
