@@ -61,6 +61,11 @@ class OrderSerializer(serializers.ModelSerializer):
     )
     client = serializers.SerializerMethodField()
     seller = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+    coupon = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field="name",
+    )
 
     def get_client(self, obj: Order) -> str:
         client = (
@@ -83,6 +88,18 @@ class OrderSerializer(serializers.ModelSerializer):
         )
 
         return seller
+
+    def get_total(self, obj: Order) -> dict:
+        total = {}
+        total["value"] = sum([product.price for product in obj.products.all()])
+        coupon = obj.coupon
+        if coupon:
+            total["discount"] = total["value"] * (coupon.discount / 100)
+            total["total"] = round(total["value"] - total["discount"], 2)
+            return total
+        total["discount"] = 0
+        total["total"] = total["value"]
+        return total
 
     def update(self, instance, validated_data):
         status = validated_data.get("status")
@@ -107,6 +124,8 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "client",
             "seller",
+            "coupon",
+            "total",
             "products",
         ]
         extra_kwargs = {

@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import (
     ListAPIView,
@@ -5,10 +6,11 @@ from rest_framework.generics import (
 )
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import NotFound
 from products.models import Product
+from sales.models import Coupon
 from .models import ShoppingCart
 from .serializers import ShoppingCartSerializer, ShoppingCartAddSerializer
-from rest_framework.exceptions import NotFound
 
 
 class ShoppingCartView(ListAPIView):
@@ -46,6 +48,25 @@ class ShoppingCartCheckoutView(UpdateAPIView):
 
     def get_object(self):
         user = self.request.user
+        coupon_data = self.request.data.get("coupon")
+
+        if coupon_data:
+            coupon = Coupon.objects.filter(
+                name__iexact=coupon_data,
+                is_avaiable=True,
+            ).first()
+
+            if not coupon:
+                raise NotFound("Cupom não está válido")
+
+            if coupon.validity == date.today():
+                coupon.is_avaiable = False
+                coupon.save()
+
+                raise NotFound("Cupom não está válido")
+
+            self.request.coupon = coupon
+
         shopping_cart_object = ShoppingCart.objects.filter(user=user).first()
 
         if not shopping_cart_object.products.all():
