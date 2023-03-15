@@ -1,6 +1,5 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from users.permissions import IsAdminOrSeller
 from rest_framework import generics
 from .serializers import OrderSerializer
 from .models import Order
@@ -9,7 +8,7 @@ from .models import Order
 class OrderView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrSeller]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         if self.request.user.is_superuser:

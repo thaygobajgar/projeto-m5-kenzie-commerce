@@ -1,6 +1,7 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from users.permissions import IsAdminOrSeller, IsProductOwner
 
 # from rest_framework import filters
 # import django_filters.rest_framework
@@ -32,7 +33,7 @@ class ProductView(ListCreateAPIView):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ProductFilter
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrSeller]
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
@@ -42,4 +43,4 @@ class ProductDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsProductOwner]
