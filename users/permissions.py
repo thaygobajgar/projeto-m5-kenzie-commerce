@@ -38,18 +38,16 @@ class IsAuthAdminOrReadyOnly(permissions.BasePermission):
 class IsAdminOrSeller(permissions.BasePermission):
     def has_permission(self, request: Request, view: View) -> bool:
         return bool(
-            request.user.is_authenticated 
+            request.method in permissions.SAFE_METHODS
+            or request.user.is_authenticated
             and request.user.user_type == "Vendedor"
             or request.user.is_superuser
         )
-    
+
 
 class IsProductOwner(permissions.BasePermission):
     def has_object_permission(self, request: Request, view: View, obj: User) -> bool:
         if request.user.is_authenticated:
-            if (
-                request.user.is_superuser
-                or obj.user == request.user
-            ):
+            if request.user.is_superuser or obj.user == request.user:
                 return True
         return False
