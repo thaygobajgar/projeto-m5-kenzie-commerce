@@ -29,17 +29,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.getenv("DEBUG", False)
-DEBUG = True
+DEBUG = os.getenv("DEBUG", False)
+# DEBUG = True
+ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = ["projeto-m5-kenzie-commerce-production.up.railway.app", "0.0.0.0"]
+# ALLOWED_HOSTS = ["projeto-m5-kenzie-commerce-production.up.railway.app", "0.0.0.0"]
 
 
 # Application definition
 
 AUTH_USER_MODEL = "users.User"
 
-THIRD_PARTY_APPS = ["rest_framework"]
+THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular"]
 
 MY_APPS = [
     "users",
@@ -50,6 +51,7 @@ MY_APPS = [
     "orders",
     "reviews",
     "lists",
+    "sales",
 ]
 
 DJANGO_APPS = [
@@ -145,6 +147,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 100,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Kenzie Commerce",
+    "DESCRIPTION": "Projeto Final M5 Kenzie Commerce",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=15),

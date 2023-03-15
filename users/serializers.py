@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ParseError
 from addresses.serializers import AddressSerializer
 from addresses.models import Address
 from shopping_carts.models import ShoppingCart
@@ -18,14 +19,10 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict):
         address_obj = validated_data.pop("address")
 
-        """
-        Adm está sendo criado via CLI do django, logo não tem necessidade dessa verificação
-        """
-
-        # if validated_data.get("user_type") == "Administrador":
-        #     user_obj = User.objects.create_superuser(**validated_data)
-        #     Address.objects.create(**address_obj, user=user_obj)
-        #     return user_obj
+        if validated_data.get("user_type") == "Administrador":
+            user_obj = User.objects.create_superuser(**validated_data)
+            Address.objects.create(**address_obj, user=user_obj)
+            return user_obj
 
         user_obj = User.objects.create_user(**validated_data)
         Address.objects.create(**address_obj, user=user_obj)
@@ -34,7 +31,19 @@ class UserSerializer(serializers.ModelSerializer):
         return user_obj
 
     def update(self, instance: User, validated_data: dict) -> User:
+        try:
+            address_obj = validated_data.pop("address")
+            for key, value in address_obj.items():
+                setattr(instance.address, key, value)
+
+                instance.address.save()
+        except KeyError:
+            ...
+
         for key, value in validated_data.items():
+            if key == "user_type" and value == "Administrador":
+                raise ParseError("Não é permitido o usuário ser Administrador")
+
             setattr(instance, key, value)
 
             if key == "password":
