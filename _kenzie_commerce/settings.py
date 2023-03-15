@@ -31,8 +31,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", False)
 # DEBUG = True
+ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = []
 # ALLOWED_HOSTS = ["projeto-m5-kenzie-commerce-production.up.railway.app", "0.0.0.0"]
 
 
@@ -40,7 +40,7 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = "users.User"
 
-THIRD_PARTY_APPS = ["rest_framework"]
+THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular"]
 
 MY_APPS = [
     "users",
@@ -157,7 +157,8 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "Kenzie Commerce",
     "DESCRIPTION": "Projeto Final M5 Kenzie Commerce",
-    "VERSION": "0.0.1",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SIMPLE_JWT = {
